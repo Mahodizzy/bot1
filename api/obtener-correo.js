@@ -20,8 +20,28 @@ module.exports = async (req, res) => {
         connection = await imaps.connect(config);
         await connection.openBox('INBOX');
         
-        const searchCriteria = ['ALL'];
-        const fetchOptions = { bodies: ['HEADER', 'TEXT'], struct: true };
+       // ... dentro del try ...
+connection = await imaps.connect(config);
+await connection.openBox('INBOX');
+
+// Solo buscamos los últimos 2 correos para ir más rápido
+const searchCriteria = [['ALL'], ['SINCE', new Date(Date.now() - 86400000).toISOString()]]; 
+const fetchOptions = { bodies: ['TEXT'], struct: true };
+const messages = await connection.search(searchCriteria, fetchOptions);
+
+if (!messages || messages.length === 0) {
+    connection.end();
+    return res.status(200).json({ contenido: "No hay correos recientes." });
+}
+
+// Tomar el último
+const ultimoCorreo = messages[messages.length - 1];
+// Buscar la parte del texto (manejamos si es multipart o simple)
+const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
+let cuerpo = part ? part.body : "Sin texto";
+
+connection.end();
+return res.status(200).json({ contenido: cuerpo.toString('utf8').substring(0, 500) }); // Limitamos a 500 caracteres para probar
         const messages = await connection.search(searchCriteria, fetchOptions);
         
         if (!messages || messages.length === 0) {
@@ -51,4 +71,5 @@ module.exports = async (req, res) => {
         });
     }
 };
+
 
