@@ -1,7 +1,7 @@
 const imaps = require('imap-simple');
 
 module.exports = async (req, res) => {
-    let connection; // La declaramos aquí arriba
+    let connection;
 
     const config = {
         imap: {
@@ -11,65 +11,54 @@ module.exports = async (req, res) => {
             port: 993,
             tls: true,
             tlsOptions: { rejectUnauthorized: false },
-            authTimeout: 10000,
+            authTimeout: 15000, // Un poco más de tiempo para conexiones lentas
         },
     };
 
     try {
-        // Intentamos conectar
         connection = await imaps.connect(config);
         await connection.openBox('INBOX');
+
+        // Buscamos correos de las últimas 24 horas para que sea súper rápido
+        const una_semana_atras = new Date();
+        una_semana_atras.setDate(una_semana_atras.getDate() - 1);
         
-       // ... dentro del try ...
-connection = await imaps.connect(config);
-await connection.openBox('INBOX');
-
-// Solo buscamos los últimos 2 correos para ir más rápido
-const searchCriteria = [['ALL'], ['SINCE', new Date(Date.now() - 86400000).toISOString()]]; 
-const fetchOptions = { bodies: ['TEXT'], struct: true };
-const messages = await connection.search(searchCriteria, fetchOptions);
-
-if (!messages || messages.length === 0) {
-    connection.end();
-    return res.status(200).json({ contenido: "No hay correos recientes." });
-}
-
-// Tomar el último
-const ultimoCorreo = messages[messages.length - 1];
-// Buscar la parte del texto (manejamos si es multipart o simple)
-const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
-let cuerpo = part ? part.body : "Sin texto";
-
-connection.end();
-return res.status(200).json({ contenido: cuerpo.toString('utf8').substring(0, 500) }); // Limitamos a 500 caracteres para probar
+        const searchCriteria = [['ALL'], ['SINCE', una_semana_atras.toISOString()]];
+        const fetchOptions = { bodies: ['TEXT'], struct: true };
+        
         const messages = await connection.search(searchCriteria, fetchOptions);
-        
+
         if (!messages || messages.length === 0) {
             if (connection) connection.end();
-            return res.status(200).json({ contenido: "No hay correos en la bandeja." });
+            return res.status(200).json({ contenido: "No se encontraron correos recientes (últimas 24h)." });
         }
 
-        // Extraer el último correo
+        // Obtener el último mensaje
         const ultimoCorreo = messages[messages.length - 1];
+        
+        // Buscamos la parte del cuerpo del mensaje
         const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
-        const cuerpo = part ? part.body.toString('utf8') : "Correo sin texto legible.";
+        let cuerpo = "Sin contenido legible";
+
+        if (part && part.body) {
+            cuerpo = part.body.toString('utf8');
+            // Si el correo es HTML, eliminamos las etiquetas para que sea solo texto
+            cuerpo = cuerpo.replace(/<[^>]*>?/gm, ''); 
+            // Acortamos el mensaje para que no rompa la interfaz
+            cuerpo = cuerpo.substring(0, 300) + "...";
+        }
 
         connection.end();
         return res.status(200).json({ contenido: cuerpo });
 
     } catch (error) {
-        // CORRECCIÓN: Solo cerramos la conexión si realmente se llegó a definir
         if (connection && typeof connection.end === 'function') {
             connection.end();
         }
-        
-        console.error("DETALLE DEL ERROR:", error.message);
-        
+        console.error("DETALLE:", error.message);
         return res.status(500).json({ 
-            error: "Error de autenticación o conexión", 
+            error: "Error de conexión", 
             detalle: error.message 
         });
     }
 };
-
-
