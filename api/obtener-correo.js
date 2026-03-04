@@ -1,7 +1,7 @@
 const imaps = require('imap-simple');
 
 module.exports = async (req, res) => {
-    let connection; // La declaramos aquí fuera para que sea accesible en todo el código
+    let connection; // La declaramos aquí arriba
 
     const config = {
         imap: {
@@ -11,11 +11,12 @@ module.exports = async (req, res) => {
             port: 993,
             tls: true,
             tlsOptions: { rejectUnauthorized: false },
-            authTimeout: 10000, // Aumentamos el tiempo de espera
+            authTimeout: 10000,
         },
     };
 
     try {
+        // Intentamos conectar
         connection = await imaps.connect(config);
         await connection.openBox('INBOX');
         
@@ -24,28 +25,30 @@ module.exports = async (req, res) => {
         const messages = await connection.search(searchCriteria, fetchOptions);
         
         if (!messages || messages.length === 0) {
-            connection.end();
-            return res.status(200).json({ contenido: "Bandeja de entrada vacía." });
+            if (connection) connection.end();
+            return res.status(200).json({ contenido: "No hay correos en la bandeja." });
         }
 
-        // Obtener el último correo
+        // Extraer el último correo
         const ultimoCorreo = messages[messages.length - 1];
         const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
-        
-        // Convertimos el buffer a texto legible
-        const cuerpo = part ? part.body.toString('utf8') : "Sin contenido de texto";
+        const cuerpo = part ? part.body.toString('utf8') : "Correo sin texto legible.";
 
         connection.end();
         return res.status(200).json({ contenido: cuerpo });
 
     } catch (error) {
-        // Si la conexión llegó a existir, la cerramos para no dejar procesos abiertos
-        if (connection) connection.end();
+        // CORRECCIÓN: Solo cerramos la conexión si realmente se llegó a definir
+        if (connection && typeof connection.end === 'function') {
+            connection.end();
+        }
         
-        console.error("ERROR DETECTADO:", error.message);
+        console.error("DETALLE DEL ERROR:", error.message);
+        
         return res.status(500).json({ 
-            error: "Error de conexión", 
+            error: "Error de autenticación o conexión", 
             detalle: error.message 
         });
     }
 };
+
