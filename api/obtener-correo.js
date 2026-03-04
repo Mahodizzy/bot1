@@ -18,30 +18,40 @@ module.exports = async (req, res) => {
         connection = await imaps.connect(config);
         await connection.openBox('INBOX');
         
+        // Buscamos solo el último correo para máxima velocidad
         const searchCriteria = ['ALL'];
         const fetchOptions = { bodies: ['TEXT'], struct: true };
         const messages = await connection.search(searchCriteria, fetchOptions);
         
-        if (!messages || messages.length === 0) {
+        if (!messages.length) {
             if (connection) connection.end();
             return res.status(200).json({ contenido: "Bandeja vacía." });
         }
 
         const ultimoCorreo = messages[messages.length - 1];
         const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
-        
-        // Simplemente enviamos el texto tal cual llega para asegurar el 200
-        let cuerpo = part ? part.body.toString('utf8') : "Sin texto";
-        
-        // Limpieza mínima para evitar errores de JSON
-        cuerpo = cuerpo.substring(0, 500); 
+        let cuerpo = part ? part.body.toString('utf8') : "";
 
-        connection.end();
-        return res.status(200).json({ contenido: cuerpo });
+        // --- LIMPIEZA EFECTIVA ---
+        // Si es un correo multipart, cortamos en el primer separador para quitar la basura
+        if (cuerpo.includes('--0000')) {
+            cuerpo = cuerpo.split('--0000')[0]; 
+        }
+
+        // Quitamos etiquetas HTML y metadatos básicos
+        cuerpo = cuerpo.replace(/<[^>]*>?/gm, '') // Quita HTML
+                       .replace(/Content-Type:[\s\S]*?UTF-8/g, '') // Quita cabeceras
+                       .replace(/\s+/g, ' ') // Quita espacios múltiples
+                       .trim();
+
+        // Si después de limpiar quedó muy largo, lo cortamos
+        const resultadoFinal = cuerpo.length > 5 ? cuerpo.substring(0, 400) : "El correo no tiene texto simple legible.";
+
+        if (connection) connection.end();
+        return res.status(200).json({ contenido: resultadoFinal });
 
     } catch (error) {
         if (connection) connection.end();
-        console.error("Error IMAP:", error.message);
         return res.status(500).json({ error: "Error de conexión", detalle: error.message });
     }
 };
