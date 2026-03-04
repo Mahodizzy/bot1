@@ -1,0 +1,244 @@
+/* Configuración General */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #C76E00; /* Color café del fondo */
+    padding: 15px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.navbar nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+/* Sección Café Superior */
+.hero-section {
+    background-color: #C76E00;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 50px; /* Espacio para que la tarjeta suba */
+}
+
+/* Tarjeta Central */
+.main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    margin-top: -80px; /* Hace que la tarjeta flote sobre el café */
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.fox-logo {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.step-text {
+    color: #ff6600;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* Opciones (Botones Grandes) */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.option-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.option-card:hover {
+    border-color: #ff6600;
+    background-color: #fff9f5;
+}
+
+.option-card .icon {
+    font-size: 30px;
+    color: #ff6600;
+}
+
+.option-card p {
+    color: #555;
+    font-weight: 500;
+}
+
+/* Botón Siguiente */
+.btn-next {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    padding: 12px 60px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-next:hover {
+    background-color: #e65c00;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-size: 12px;
+}
+
+/* --- BORRAR O COMENTAR ESTO (el estilo viejo del emoji) --- */
+/*
+.fox-logo {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+*/
+
+/* --- AGREGAR ESTO (el estilo nuevo para la imagen) --- */
+.fox-image {
+    display: block;      /* Asegura que se comporte como bloque para centrarla */
+    margin: 0 auto 20px; /* Centra horizontalmente y da 20px de margen abajo */
+    max-width: 80px;     /* Ancho máximo de la imagen (ajústalo según necesites) */
+    height: auto;        /* Mantiene la proporción de la imagen */
+}
+
+/* ... (manten el resto del CSS anterior) ... */
+
+/* Estilo para la opción seleccionada */
+.option-card.selected {
+    background-color: #ff6600; /* Naranja */
+    border-color: #ff6600;
+}
+
+/* Cambiar el color del texto e icono a blanco cuando esté seleccionado */
+.option-card.selected p, 
+.option-card.selected .icon {
+    color: white;
+}
+
+/* Estilo base del icono (asegúrate de que tenga el color naranja por defecto) */
+.icon {
+    font-size: 30px;
+    color: #ff6600; 
+    transition: color 0.3s;
+}
+
+/* Clase para ocultar pasos */
+.hidden {
+    display: none !important;
+}
+
+/* Ajustes para las plataformas en el Paso 2 */
+.grid-options {
+    display: grid;
+    grid-template-columns: 1fr; /* Una columna como en tu imagen */
+    gap: 10px;
+}
+
+.option-card.platform img {
+    height: 40px;
+    margin-bottom: 5px;
+    object-fit: contain;
+}
+
+/* Grupo de botones (Volver y Siguiente) */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    color: #ff6600;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Estilos para el Paso 3 */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.input-field {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-field:focus {
+    border-color: #ff6600; /* Se pinta naranja al escribir */
+}
+
+/* Ajuste para que el botón "Aceptar" se vea igual al de "Siguiente" */
+.btn-next {
+    min-width: 140px;
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot De Códigos - Recreación</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">Refills-ec</div>
+        <nav>
+            <a href="#">DESCARGAR APP</a>
+            <a href="#">INICIAR SESIÓN</a>
+            <a href="#">CONTACTAR</a>
+        </nav>
+    </header>
+
+    <section class="hero-section">
+        <h1>Bot De Códigos</h1>
+    </section>
+
+    <main class="main-container">
+        <div class="card">
+            <div class="card-header">
+                
+                <img src="https://refills-ec.apps-oficial.com/v1/app//resources/assets/img/perfil/1754346953WhatsApp%20Image%202025-08-04%20at%2016.05.15.jpeg" alt="Logo Bot De Códigos" class="fox-image">
+                
+               <div id="step-1" class="step">
+    <p class="step-text">Paso 1 de 4</p>
+    <h2>¿Qué desea realizar?</h2>
+    <div class="options-container">
+        <button class="option-card selected" data-value="acceso">
+            <span class="icon">👥</span>
+            <p>Código/Solicitud acceso</p>
+        </button>
+        <button class="option-card" data-value="actualizar">
+            <span class="icon">👥</span>
+            <p>Código/Actualizar hogar</p>
+        </button>
+    </div>
+    <button class="btn-next" onclick="goToStep(2)">Siguiente</button>
+</div>
+
+<div id="step-2" class="step hidden">
+    <p class="step-text">Paso 2 de 4</p>
+    <h2>Elija la plataforma:</h2>
+    <div class="options-container grid-options">
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix">
+            <p>Netflix</p>
+        </button>
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" alt="Disney+">
+            <p>Disney+</p>
+        </button>
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video">
+            <p>Prime Video</p>
+        </button>
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg" alt="HBO Max">
+            <p>HBO Max</p>
+        </button>
+    </div>
+    <div class="button-group">
+        <button class="btn-back" onclick="goToStep(1)">Volver</button>
+        <button class="btn-next" onclick="goToStep(3)">Siguiente</button>
+    </div>
+</div>
+
+<div id="step-3" class="step hidden">
+    <p class="step-text">Paso 3 de 4</p>
+    <h2>Último paso</h2>
+    
+    <div class="form-container">
+        <input type="text" class="input-field" placeholder="Ingresar contraseña única">
+        <input type="email" class="input-field" placeholder="Ingresar email de la cuenta">
+    </div>
+
+    <div class="button-group">
+        <button class="btn-back" onclick="goToStep(2)">Volver</button>
+        <button id="btnAceptar">Aceptar</button>
+<div id="resultado">El correo aparecerá aquí...</div>
+
+<script>
+  document.getElementById('btnAceptar').onclick = async () => {
+    const res = await fetch('/api/obtener-correo');
+    const data = await res.json();
+    document.getElementById('resultado').innerText = data.contenido || data.error;
+  };
+</script>
+    </div>
+</div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        Copyright © 2026 refills-ec
+    </footer>
+
+<script src="scrip.js"></script>
+</body>
+</html>
