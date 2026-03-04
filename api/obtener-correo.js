@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
     // Obtenemos el último mensaje
     const ultimoCorreo = messages[messages.length - 1];
     const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
-    const cuerpo = part ? part.body : "El correo no tiene texto plano.";
+    const cuerpo = part ? part.body.toString('utf8') : "Correo sin texto";
 
     connection.end();
     
@@ -73,5 +73,6 @@ document.getElementById('btnAceptar').onclick = async () => {
         console.error(error);
     }
 };
+
 
 
