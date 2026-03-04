@@ -43,3 +43,12 @@ module.exports = async (req, res) => {
   }
 };
 
+// ... (dentro del bloque try, después de obtener 'cuerpo')
+connection.end();
+
+// Limpiamos un poco el texto por si viene con códigos raros
+const textoLimpio = cuerpo.toString().replace(/[\r\n]/g, "<br>");
+
+res.status(200).json({ contenido: textoLimpio });
+
+
