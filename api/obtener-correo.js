@@ -2,7 +2,6 @@ const imaps = require('imap-simple');
 
 module.exports = async (req, res) => {
     let connection;
-
     const config = {
         imap: {
             user: process.env.GMAIL_USER,
@@ -11,54 +10,49 @@ module.exports = async (req, res) => {
             port: 993,
             tls: true,
             tlsOptions: { rejectUnauthorized: false },
-            authTimeout: 15000, // Un poco más de tiempo para conexiones lentas
+            authTimeout: 10000,
         },
     };
 
     try {
         connection = await imaps.connect(config);
         await connection.openBox('INBOX');
-
-        // Buscamos correos de las últimas 24 horas para que sea súper rápido
-        const una_semana_atras = new Date();
-        una_semana_atras.setDate(una_semana_atras.getDate() - 1);
         
-        const searchCriteria = [['ALL'], ['SINCE', una_semana_atras.toISOString()]];
+        // Buscamos solo el último correo
+        const searchCriteria = ['ALL'];
         const fetchOptions = { bodies: ['TEXT'], struct: true };
-        
         const messages = await connection.search(searchCriteria, fetchOptions);
-
-        if (!messages || messages.length === 0) {
-            if (connection) connection.end();
-            return res.status(200).json({ contenido: "No se encontraron correos recientes (últimas 24h)." });
-        }
-
-        // Obtener el último mensaje
-        const ultimoCorreo = messages[messages.length - 1];
         
-        // Buscamos la parte del cuerpo del mensaje
-        const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
-        let cuerpo = "Sin contenido legible";
-
-        if (part && part.body) {
-            cuerpo = part.body.toString('utf8');
-            // Si el correo es HTML, eliminamos las etiquetas para que sea solo texto
-            cuerpo = cuerpo.replace(/<[^>]*>?/gm, ''); 
-            // Acortamos el mensaje para que no rompa la interfaz
-            cuerpo = cuerpo.substring(0, 300) + "...";
+        if (!messages.length) {
+            connection.end();
+            return res.status(200).json({ contenido: "Bandeja vacía." });
         }
+
+        const ultimoCorreo = messages[messages.length - 1];
+        const part = ultimoCorreo.parts.find(p => p.which === 'TEXT');
+        let cuerpo = part ? part.body : "";
+
+        // --- FILTRO PARA LIMPIAR EL CONTENIDO ---
+        // 1. Convertimos a texto
+        cuerpo = cuerpo.toString('utf8');
+        
+        // 2. Si el correo tiene varias partes (multipart), nos quedamos solo con la primera
+        if (cuerpo.includes('--')) {
+            const partes = cuerpo.split('--');
+            // Intentamos buscar una parte que no tenga códigos HTML pesados
+            cuerpo = partes.find(p => p.includes('Content-Type: text/plain')) || partes[1];
+        }
+
+        // 3. Limpieza final de etiquetas y metadatos
+        cuerpo = cuerpo.replace(/Content-Type:[\s\S]*?charset="UTF-8"/g, ''); // Quita cabeceras
+        cuerpo = cuerpo.replace(/<[^>]*>?/gm, ''); // Quita HTML
+        cuerpo = cuerpo.trim().substring(0, 300); // Cortamos para que no sature la pantalla
 
         connection.end();
         return res.status(200).json({ contenido: cuerpo });
 
     } catch (error) {
-        if (connection && typeof connection.end === 'function') {
-            connection.end();
-        }
-        console.error("DETALLE:", error.message);
-        return res.status(500).json({ 
-            error: "Error de conexión", 
-            detalle: error.message 
-        });
+        if (connection) connection.end();
+        return res.status(500).json({ error: error.message });
     }
 };
