@@ -52,3 +52,26 @@ const textoLimpio = cuerpo.toString().replace(/[\r\n]/g, "<br>");
 res.status(200).json({ contenido: textoLimpio });
 
 
+document.getElementById('btnAceptar').onclick = async () => {
+    const display = document.getElementById('resultado'); // Asegúrate que este ID exista
+    display.innerHTML = "Cargando correo...";
+
+    try {
+        const res = await fetch('/api/obtener-correo');
+        const data = await res.json();
+
+        if (data.contenido) {
+            // Usamos innerHTML para que los <br> se vean como saltos de línea
+            display.innerHTML = `<div style="text-align:left; padding:10px; border:1px solid #ccc;">
+                                    ${data.contenido}
+                                 </div>`;
+        } else {
+            display.innerHTML = "No se encontró contenido en el correo.";
+        }
+    } catch (error) {
+        display.innerHTML = "Error al conectar con el servidor.";
+        console.error(error);
+    }
+};
+
+
