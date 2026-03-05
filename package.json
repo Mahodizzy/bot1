@@ -1,7 +1,7 @@
 {
-  "name": "bot-gmail-vercel",
+  "name": "bot-codigos",
   "version": "1.0.0",
   "dependencies": {
-    "imap-simple": "^5.1.0"
+    "imap-simple": "^5.0.0"
   }
 }
