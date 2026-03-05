@@ -3,79 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paso 3 de 4 - Verificación</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; color: #333; }
-        .container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .logo { width: 100px; margin-bottom: 20px; }
-        .step { color: #ff6600; font-size: 14px; font-weight: bold; }
-        h2 { margin-top: 5px; color: #1a2a40; }
-        .input-group { margin-bottom: 15px; }
-        input { width: 90%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-        .btn-aceptar { background-color: #f0f0f0; border: 1px solid #999; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-aceptar:hover { background-color: #e0e0e0; }
-        /* Estilo para el área donde aparecerá el correo */
-        #resultado { 
-            margin-top: 20px; 
-            padding: 15px; 
-            border-radius: 5px; 
-            background: #f9f9f9; 
-            font-size: 13px; 
-            text-align: left; 
-            min-height: 50px;
-            border: 1px dashed #bbb;
-            overflow-wrap: break-word;
-        }
-        .loading { color: #ff6600; font-style: italic; }
-        .error { color: #d93025; }
-    </style>
+    <title>Bot De Códigos - Recreación</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <img src="https://bot1-iota.vercel.app/logo.png" alt="Logo" class="logo"> <div class="step">Paso 3 de 4</div>
-    <h2>Último paso</h2>
+    <header class="navbar">
+        <div class="logo">Refills-ec</div>
+        <nav>
+            <a href="#">DESCARGAR APP</a>
+            <a href="#">INICIAR SESIÓN</a>
+            <a href="#">CONTACTAR</a>
+        </nav>
+    </header>
 
-    <div class="input-group">
-        <input type="text" placeholder="Ingresar contraseña única">
+    <section class="hero-section">
+        <h1>Bot De Códigos</h1>
+    </section>
+
+    <main class="main-container">
+        <div class="card">
+            <div class="card-header">
+                
+                <img src="https://refills-ec.apps-oficial.com/v1/app//resources/assets/img/perfil/1754346953WhatsApp%20Image%202025-08-04%20at%2016.05.15.jpeg" alt="Logo Bot De Códigos" class="fox-image">
+                
+               <div id="step-1" class="step">
+    <p class="step-text">Paso 1 de 4</p>
+    <h2>¿Qué desea realizar?</h2>
+    <div class="options-container">
+        <button class="option-card selected" data-value="acceso">
+            <span class="icon">👥</span>
+            <p>Código/Solicitud acceso</p>
+        </button>
+        <button class="option-card" data-value="actualizar">
+            <span class="icon">👥</span>
+            <p>Código/Actualizar hogar</p>
+        </button>
     </div>
-    <div class="input-group">
-        <input type="email" placeholder="Ingresar email de la cuenta">
+    <button class="btn-next" onclick="goToStep(2)">Siguiente</button>
+</div>
+
+<div id="step-2" class="step hidden">
+    <p class="step-text">Paso 2 de 4</p>
+    <h2>Elija la plataforma:</h2>
+    <div class="options-container grid-options">
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix">
+            <p>Netflix</p>
+        </button>
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" alt="Disney+">
+            <p>Disney+</p>
+        </button>
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video">
+            <p>Prime Video</p>
+        </button>
+        <button class="option-card platform">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg" alt="HBO Max">
+            <p>HBO Max</p>
+        </button>
     </div>
-
-    <div id="resultado">Los datos del correo aparecerán aquí al dar clic...</div>
-
-    <div style="margin-top: 20px;">
-        <span style="color: #ff6600; cursor: pointer; margin-right: 15px;">Volver</span>
-        <button id="btnAceptar" class="btn-aceptar">Aceptar</button>
+    <div class="button-group">
+        <button class="btn-back" onclick="goToStep(1)">Volver</button>
+        <button class="btn-next" onclick="goToStep(3)">Siguiente</button>
     </div>
 </div>
 
-<script>
-    document.getElementById('btnAceptar').onclick = async () => {
-        const display = document.getElementById('resultado');
-        display.innerHTML = '<span class="loading">Conectando con Gmail...</span>';
-        
-        try {
-            // Llamada a tu API en Vercel
-            const res = await fetch('/api/obtener-correo');
-            
-            if (!res.ok) throw new Error('Error en la respuesta del servidor');
-            
-            const data = await res.json();
+<div id="step-3" class="step hidden">
+    <p class="step-text">Paso 3 de 4</p>
+    <h2>Último paso</h2>
+    
+    <div class="form-container">
+        <input type="text" class="input-field" placeholder="Ingresar contraseña única">
+        <input type="email" class="input-field" placeholder="Ingresar email de la cuenta">
+    </div>
 
-            if (data.contenido) {
-                // Mostramos el contenido. Si es HTML, se renderizará.
-                display.innerHTML = `<strong>Contenido del correo:</strong><br>${data.contenido}`;
-            } else if (data.error) {
-                display.innerHTML = `<span class="error">${data.error}</span>`;
-            }
-        } catch (error) {
-            display.innerHTML = `<span class="error">Error: No se pudo obtener el correo. Revisa los logs.</span>`;
-            console.error(error);
-        }
-    };
+    <div class="button-group">
+        <button class="btn-back" onclick="goToStep(2)">Volver</button>
+        <button id="btnAceptar">Aceptar</button>
+    </div>
+
+    <div id="resultado">El correo aparecerá aquí...</div>
+</div>
+
+    <footer class="footer">
+        Copyright © 2026 refills-ec
+    </footer>
+
+<script>
+document.getElementById('btnAceptar').onclick = async () => {
+    try {
+        const res = await fetch('/api/obtener-correo');
+        const data = await res.json();
+        document.getElementById('resultado').innerText = data.contenido || data.error;
+    } catch (error) {
+        document.getElementById('resultado').innerText = "Error al conectar con el servidor";
+    }
+};
 </script>
 
+<script src="script.js"></script>
 </body>
 </html>
