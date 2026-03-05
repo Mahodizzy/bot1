@@ -59,10 +59,15 @@ body {
     background: white;
     width: 100%;
     max-width: 500px;
-    border-radius: 12px;
+    border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     padding: 40px 30px;
     text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
 }
 
 .fox-logo {
@@ -117,6 +122,11 @@ h2 {
     font-weight: 500;
 }
 
+.option-card.platform.selected {
+    border-color: #ff6600;
+    background-color: #fff3e6;
+}
+
 /* Botón Siguiente */
 .btn-next {
     background-color: #ff6600;
@@ -128,6 +138,7 @@ h2 {
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
+    min-width: 140px
 }
 
 .btn-next:hover {
@@ -238,7 +249,3 @@ h2 {
     border-color: #ff6600; /* Se pinta naranja al escribir */
 }
 
-/* Ajuste para que el botón "Aceptar" se vea igual al de "Siguiente" */
-.btn-next {
-    min-width: 140px;
-}
